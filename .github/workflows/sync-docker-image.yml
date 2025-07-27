@@ -38,7 +38,7 @@ jobs:
       - name: Login to Docker Hub
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
-            --u "${{ secrets.DOCKERHUB_USERNAME }}" \
+            -u "${{ secrets.DOCKERHUB_USERNAME }}" \
             --password-stdin \
             docker.io
       
@@ -82,7 +82,7 @@ jobs:
       - name: Login to Docker Hub
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
-            --u "${{ secrets.DOCKERHUB_USERNAME }}" \
+            -u "${{ secrets.DOCKERHUB_USERNAME }}" \
             --password-stdin \
             docker.io
       
@@ -123,7 +123,7 @@ jobs:
       - name: Login to Docker Hub
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
-            --u "${{ secrets.DOCKERHUB_USERNAME }}" \
+            -u "${{ secrets.DOCKERHUB_USERNAME }}" \
             --password-stdin \
             docker.io
       
@@ -169,7 +169,7 @@ jobs:
       - name: Login to Docker Hub
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
-            --u "${{ secrets.DOCKERHUB_USERNAME }}" \
+            -u "${{ secrets.DOCKERHUB_USERNAME }}" \
             --password-stdin \
             docker.io
       
@@ -210,7 +210,7 @@ jobs:
       - name: Login to Docker Hub
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
-            --u "${{ secrets.DOCKERHUB_USERNAME }}" \
+            -u "${{ secrets.DOCKERHUB_USERNAME }}" \
             --password-stdin \
             docker.io
       
