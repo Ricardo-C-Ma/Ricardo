@@ -12,7 +12,11 @@ env:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    
     strategy:
+      fail-fast: false
+      max-parallel: 4
       matrix:
         include:
           # DeepLabCut tags
@@ -84,9 +88,6 @@ jobs:
           # Jupyter DataScience
           - project: jupyter-datascience
             image: jupyter/datascience-notebook
-            tag: 801ca2b
-          - project: jupyter-datascience
-            image: jupyter/datascience-notebook
             tag: x86_64-ubuntu-22.04
           - project: jupyter-datascience
             image: jupyter/datascience-notebook
@@ -107,10 +108,10 @@ jobs:
             image: jupyter/datascience-notebook
             tag: x86_64-hub-4.0.2
 
-          # Jupyter NBViewer
-          - project: jupyter-nbviewer
-            image: jupyter/nbviewer
-            tag: 801ca2b
+          # Jupyter r-notebook
+          - project: jupyter-r-notebook
+            image: jupyter/r-notebook
+            tag: x86_64-ubuntu-22.04
 
     steps:
       - name: Login to Docker Hub
