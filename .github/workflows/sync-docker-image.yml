@@ -117,7 +117,7 @@ jobs:
           - project: senaite-senaite
             image: senaite/senaite
             tag: 2.x
-          - project: senite-senaite
+          - project: senaite-senaite
             image: senaite/senaite
             tag: v2.6.0
           - project: senaite-senaite
@@ -143,7 +143,7 @@ jobs:
             image: openvpn/openvpn-as
             tag: latest
           - project: openvpn
-            image: oopenvpn/openvpn-as
+            image: openvpn/openvpn-as
             tag: 2.14.3-5936bcd7-Ubuntu24
             
 
