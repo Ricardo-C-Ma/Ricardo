@@ -37,7 +37,7 @@ jobs:
     steps:
     # 第一步：登录 Docker Hub（关键修复）
      - name: Login to Docker Hub
-        run: |
+       run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
           --username "${{ secrets.DOCKERHUB_USERNAME }}" \
           --password-stdin \
@@ -73,7 +73,7 @@ jobs:
         tag: ["headless", "gui", "full"]
     steps:
      - name: Login to Docker Hub
-        run: |
+       run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
           --username "${{ secrets.DOCKERHUB_USERNAME }}" \
           --password-stdin \
@@ -109,7 +109,7 @@ jobs:
     steps:
       # 第一步：登录 Docker Hub（关键修复）
      - name: Login to Docker Hub
-        run: |
+       run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
           --username "${{ secrets.DOCKERHUB_USERNAME }}" \
           --password-stdin \
@@ -150,7 +150,7 @@ jobs:
     steps:
      # 第一步：登录 Docker Hub（关键修复）
      - name: Login to Docker Hub
-        run: |
+       run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
           --username "${{ secrets.DOCKERHUB_USERNAME }}" \
           --password-stdin \
@@ -184,7 +184,7 @@ jobs:
     steps:
    # 第一步：登录 Docker Hub（关键修复）
     - name: Login to Docker Hub
-        run: |
+      run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
           --username "${{ secrets.DOCKERHUB_USERNAME }}" \
           --password-stdin \
