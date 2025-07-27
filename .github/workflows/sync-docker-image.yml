@@ -137,6 +137,14 @@ jobs:
           - project: misolims
             image: miso-lims-webapp
             tag: 1.42.0
+
+          #openvpn
+          - project: openvpn
+            image: openvpn-openvpn-as
+            tag: latest
+          - project: openvpn
+            image: openvpn-openvpn-as
+            tag: 2.14.3-5936bcd7-Ubuntu24
             
 
     steps:
