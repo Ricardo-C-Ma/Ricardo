@@ -19,7 +19,7 @@ jobs:
       
       # 登录阿里云 ACR (修复版 - 单行命令)
       - name: Login to Alibaba Cloud ACR
-        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login -u "${{ secrets.ACR_USERNAME }}" --password-stdin "${{ env.ACR_REGISTRY }}"
+        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login ${{ env.ACR_REGISTRY }} --username ${{ secrets.ACR_USERNAME }} --password-stdin
       
       # 其他步骤保持不变...
       - name: Pull Docker Image
