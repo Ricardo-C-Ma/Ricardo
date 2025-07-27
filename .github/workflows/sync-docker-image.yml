@@ -15,7 +15,7 @@ jobs:
     steps:
       # 登录 Docker Hub (修复版 - 单行命令)
       - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin docker.io
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin docker.io
       
       # 登录阿里云 ACR (修复版 - 单行命令)
       - name: Login to Alibaba Cloud ACR
