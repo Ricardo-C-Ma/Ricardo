@@ -36,11 +36,12 @@ jobs:
     
     steps:
     # 第一步：登录 Docker Hub（关键修复）
-      - name: Login to Docker Hub
+     - name: Login to Docker Hub
         run: |
-          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login \
-          -u ${{ secrets.DOCKERHUB_USERNAME }} \
-          --password-stdin docker.io
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
+          --username "${{ secrets.DOCKERHUB_USERNAME }}" \
+          --password-stdin \
+          docker.io
       
       # 第二步：登录阿里云 ACR
       - name: Login to Alibaba Cloud ACR
@@ -71,12 +72,12 @@ jobs:
         image: ["jbohnslav/deepethogram"]
         tag: ["headless", "gui", "full"]
     steps:
-      # 第一步：登录 Docker Hub（关键修复）
-      - name: Login to Docker Hub
+     - name: Login to Docker Hub
         run: |
-          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login \
-          -u ${{ secrets.DOCKERHUB_USERNAME }} \
-          --password-stdin docker.io
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
+          --username "${{ secrets.DOCKERHUB_USERNAME }}" \
+          --password-stdin \
+          docker.io
       
       # 第二步：登录阿里云 ACR
       - name: Login to Alibaba Cloud ACR
@@ -107,11 +108,12 @@ jobs:
         tag: ["latest", "1.5.0", "1.5.0rc1"]
     steps:
       # 第一步：登录 Docker Hub（关键修复）
-      - name: Login to Docker Hub
+     - name: Login to Docker Hub
         run: |
-          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login \
-          -u ${{ secrets.DOCKERHUB_USERNAME }} \
-          --password-stdin docker.io
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
+          --username "${{ secrets.DOCKERHUB_USERNAME }}" \
+          --password-stdin \
+          docker.io
       
       # 第二步：登录阿里云 ACR
       - name: Login to Alibaba Cloud ACR
@@ -147,11 +149,12 @@ jobs:
         ]
     steps:
      # 第一步：登录 Docker Hub（关键修复）
-      - name: Login to Docker Hub
+     - name: Login to Docker Hub
         run: |
-          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login \
-          -u ${{ secrets.DOCKERHUB_USERNAME }} \
-          --password-stdin docker.io
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
+          --username "${{ secrets.DOCKERHUB_USERNAME }}" \
+          --password-stdin \
+          docker.io
       
       # 第二步：登录阿里云 ACR
       - name: Login to Alibaba Cloud ACR
@@ -180,11 +183,12 @@ jobs:
         project: ["jupyter-nbviewer"]
     steps:
    # 第一步：登录 Docker Hub（关键修复）
-      - name: Login to Docker Hub
+    - name: Login to Docker Hub
         run: |
-          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login \
-          -u ${{ secrets.DOCKERHUB_USERNAME }} \
-          --password-stdin docker.io
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
+          --username "${{ secrets.DOCKERHUB_USERNAME }}" \
+          --password-stdin \
+          docker.io
       
       # 第二步：登录阿里云 ACR
       - name: Login to Alibaba Cloud ACR
