@@ -1,7 +1,7 @@
 # ======================================================================
 # 工作流名称：同步 Docker 镜像到阿里云个人版 ACR
 # 配置说明：每个项目独立仓库，共享同一个 ACR 命名空间
-# 修复问题：第48行变量引用错误
+# 修复问题：缩进错误和登录方式问题
 # ======================================================================
 name: Sync Docker Images to Personal ACR
 
@@ -21,7 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # 修复：使用固定项目名称作为仓库名
         project: ["deeplabcut"]
         image: ["deeplabcut/deeplabcut"]
         tag: [
@@ -35,33 +34,41 @@ jobs:
         ]
     
     steps:
-    # 第一步：登录 Docker Hub（关键修复）
-     - name: Login to Docker Hub
-       run: |
+      # 第一步：登录 Docker Hub
+      - name: Login to Docker Hub
+        run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
-          --username "${{ secrets.DOCKERHUB_USERNAME }}" \
-          --password-stdin \
-          docker.io
+            --username "${{ secrets.DOCKERHUB_USERNAME }}" \
+            --password-stdin \
+            docker.io
       
       # 第二步：登录阿里云 ACR
       - name: Login to Alibaba Cloud ACR
         run: |
-          docker login -u ${{ secrets.ACR_USERNAME }} \
-          -p ${{ secrets.ACR_PASSWORD }} \
-          ${{ env.ACR_REGISTRY }}
-            
+          echo "${{ secrets.ACR_PASSWORD }}" | docker login \
+            --username "${{ secrets.ACR_USERNAME }}" \
+            --password-stdin \
+            "${{ env.ACR_REGISTRY }}"
+      
       - name: Pull Docker Image
         run: docker pull ${{ matrix.image }}:${{ matrix.tag }}
       
-      # 修复：第48行 - 直接使用 matrix.project 作为仓库名
+      # 为镜像打标签
       - name: Tag Image for Personal ACR
         run: |
           docker tag ${{ matrix.image }}:${{ matrix.tag }} \
-          ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
+            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
       
       - name: Push to Personal ACR
         run: |
           docker push ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
+      
+      # 清理步骤
+      - name: Cleanup
+        run: |
+          docker rmi ${{ matrix.image }}:${{ matrix.tag }} || true
+          docker rmi ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }} || true
+          docker system prune -f
 
   # 任务 2: DeepEthogram
   sync-deepethogram:
@@ -72,31 +79,37 @@ jobs:
         image: ["jbohnslav/deepethogram"]
         tag: ["headless", "gui", "full"]
     steps:
-     - name: Login to Docker Hub
-       run: |
+      - name: Login to Docker Hub
+        run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
-          --username "${{ secrets.DOCKERHUB_USERNAME }}" \
-          --password-stdin \
-          docker.io
+            --username "${{ secrets.DOCKERHUB_USERNAME }}" \
+            --password-stdin \
+            docker.io
       
-      # 第二步：登录阿里云 ACR
       - name: Login to Alibaba Cloud ACR
         run: |
-          docker login -u ${{ secrets.ACR_USERNAME }} \
-          -p ${{ secrets.ACR_PASSWORD }} \
-          ${{ env.ACR_REGISTRY }}
-            
+          echo "${{ secrets.ACR_PASSWORD }}" | docker login \
+            --username "${{ secrets.ACR_USERNAME }}" \
+            --password-stdin \
+            "${{ env.ACR_REGISTRY }}"
+      
       - name: Pull Docker Image
         run: docker pull ${{ matrix.image }}:${{ matrix.tag }}
       
       - name: Tag Image for Personal ACR
         run: |
           docker tag ${{ matrix.image }}:${{ matrix.tag }} \
-          ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
+            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
       
       - name: Push to Personal ACR
         run: |
           docker push ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
+      
+      - name: Cleanup
+        run: |
+          docker rmi ${{ matrix.image }}:${{ matrix.tag }} || true
+          docker rmi ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }} || true
+          docker system prune -f
 
   # 任务 3: MONAI
   sync-monai:
@@ -107,32 +120,37 @@ jobs:
         image: ["projectmonai/monai"]
         tag: ["latest", "1.5.0", "1.5.0rc1"]
     steps:
-      # 第一步：登录 Docker Hub（关键修复）
-     - name: Login to Docker Hub
-       run: |
+      - name: Login to Docker Hub
+        run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
-          --username "${{ secrets.DOCKERHUB_USERNAME }}" \
-          --password-stdin \
-          docker.io
+            --username "${{ secrets.DOCKERHUB_USERNAME }}" \
+            --password-stdin \
+            docker.io
       
-      # 第二步：登录阿里云 ACR
       - name: Login to Alibaba Cloud ACR
         run: |
-          docker login -u ${{ secrets.ACR_USERNAME }} \
-          -p ${{ secrets.ACR_PASSWORD }} \
-          ${{ env.ACR_REGISTRY }}
-            
+          echo "${{ secrets.ACR_PASSWORD }}" | docker login \
+            --username "${{ secrets.ACR_USERNAME }}" \
+            --password-stdin \
+            "${{ env.ACR_REGISTRY }}"
+      
       - name: Pull Docker Image
         run: docker pull ${{ matrix.image }}:${{ matrix.tag }}
       
       - name: Tag Image for Personal ACR
         run: |
           docker tag ${{ matrix.image }}:${{ matrix.tag }} \
-          ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
+            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
       
       - name: Push to Personal ACR
         run: |
           docker push ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
+      
+      - name: Cleanup
+        run: |
+          docker rmi ${{ matrix.image }}:${{ matrix.tag }} || true
+          docker rmi ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }} || true
+          docker system prune -f
 
   # 任务 4: Jupyter DataScience
   sync-jupyter-datascience:
@@ -148,73 +166,97 @@ jobs:
           "x86_64-lab-4.0.7", "x86_64-hub-4.0.2"
         ]
     steps:
-     # 第一步：登录 Docker Hub（关键修复）
-     - name: Login to Docker Hub
-       run: |
+      - name: Login to Docker Hub
+        run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
-          --username "${{ secrets.DOCKERHUB_USERNAME }}" \
-          --password-stdin \
-          docker.io
+            --username "${{ secrets.DOCKERHUB_USERNAME }}" \
+            --password-stdin \
+            docker.io
       
-      # 第二步：登录阿里云 ACR
       - name: Login to Alibaba Cloud ACR
         run: |
-          docker login -u ${{ secrets.ACR_USERNAME }} \
-          -p ${{ secrets.ACR_PASSWORD }} \
-          ${{ env.ACR_REGISTRY }}
-            
+          echo "${{ secrets.ACR_PASSWORD }}" | docker login \
+            --username "${{ secrets.ACR_USERNAME }}" \
+            --password-stdin \
+            "${{ env.ACR_REGISTRY }}"
+      
       - name: Pull Docker Image
         run: docker pull ${{ matrix.image }}:${{ matrix.tag }}
       
       - name: Tag Image for Personal ACR
         run: |
           docker tag ${{ matrix.image }}:${{ matrix.tag }} \
-          ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
+            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
       
       - name: Push to Personal ACR
         run: |
           docker push ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
+      
+      - name: Cleanup
+        run: |
+          docker rmi ${{ matrix.image }}:${{ matrix.tag }} || true
+          docker rmi ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }} || true
+          docker system prune -f
 
-  # 任务 5: Jupyter NBViewer (单标签特殊处理)
+  # 任务 5: Jupyter NBViewer
   sync-jupyter-nbviewer:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         project: ["jupyter-nbviewer"]
+        image_tag: ["801ca2b"]
+    
     steps:
-   # 第一步：登录 Docker Hub（关键修复）
-    - name: Login to Docker Hub
-      run: |
+      - name: Login to Docker Hub
+        run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
-          --username "${{ secrets.DOCKERHUB_USERNAME }}" \
-          --password-stdin \
-          docker.io
+            --username "${{ secrets.DOCKERHUB_USERNAME }}" \
+            --password-stdin \
+            docker.io
       
-      # 第二步：登录阿里云 ACR
       - name: Login to Alibaba Cloud ACR
         run: |
-          docker login -u ${{ secrets.ACR_USERNAME }} \
-          -p ${{ secrets.ACR_PASSWORD }} \
-          ${{ env.ACR_REGISTRY }}
-            
+          echo "${{ secrets.ACR_PASSWORD }}" | docker login \
+            --username "${{ secrets.ACR_USERNAME }}" \
+            --password-stdin \
+            "${{ env.ACR_REGISTRY }}"
+      
       - name: Pull Docker Image
-        run: docker pull jupyter/nbviewer:801ca2b
+        run: docker pull jupyter/nbviewer:${{ matrix.image_tag }}
       
       - name: Tag Image for Personal ACR
         run: |
-          docker tag jupyter/nbviewer:801ca2b \
-          ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:801ca2b
+          docker tag jupyter/nbviewer:${{ matrix.image_tag }} \
+            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.image_tag }}
       
       - name: Push to Personal ACR
         run: |
-          docker push ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:801ca2b
+          docker push ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.image_tag }}
+      
+      - name: Cleanup
+        run: |
+          docker rmi jupyter/nbviewer:${{ matrix.image_tag }} || true
+          docker rmi ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.image_tag }} || true
+          docker system prune -f
 
 # ======================================================================
 # 修复说明：
-# 1. 移除了有问题的全局 REPO_NAME 变量
-# 2. 直接在任务中使用 matrix.project 作为仓库名
-# 3. 简化了标签处理逻辑
-# 4. 优化了矩阵定义格式，提高可读性
+# 1. 修复所有缩进问题：
+#    - 统一使用2空格缩进
+#    - 确保所有步骤对齐
+#    - 多行命令使用正确缩进
+#
+# 2. 改进登录方式：
+#    - 所有登录步骤使用 `--password-stdin` 避免 TTY 错误
+#    - 使用安全密码传输方式
+#
+# 3. 添加清理步骤：
+#    - 减少磁盘空间占用
+#    - 避免 GitHub Runner 资源耗尽
+#
+# 4. 优化 NBViewer 任务：
+#    - 使用矩阵变量保持一致性
+#    - 添加清理步骤
 #
 # 现在每个项目将有自己的仓库：
 #   deeplabcut → crpi-mvnxnutpj57cigam.cn-hangzhou.personal.cr.aliyuncs.com/ricardolerry/deeplabcut
