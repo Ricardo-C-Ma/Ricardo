@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 env:
-  ACR_REGISTRY: crpi-mvnxnutpj57cigam.cn-hangzhou.personal.cr.aliyuncs.com
-  ACR_NAMESPACE: ricardolerry
+  ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }}
+  ACR_NAMESPACE: ${{ secrets.ACR_NAMESPACE }}
 
 jobs:
   sync:
