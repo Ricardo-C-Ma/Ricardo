@@ -2,7 +2,7 @@ name: Sync Docker Images to Personal ACR
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # 每天UTC凌晨2点 (北京时间上午10点)
+    - cron: '0 2 * * *'  # UTC 02:00 
   workflow_dispatch:
 
 env:
@@ -112,6 +112,32 @@ jobs:
           - project: jupyter-r-notebook
             image: jupyter/r-notebook
             tag: x86_64-ubuntu-22.04
+
+          #Senaite
+          - project: senaite-senaite
+            image: senaite
+            tag: 2.x
+          - project: senite-senaite
+            image: senaite
+            tag: v2.6.0
+          - project: senaite-senaite
+            image: senaite
+            tag: edge
+
+          #misolims
+          - project: misolims
+            image: miso-lims-migration
+            tag: latest
+          - project: misolims
+            image: miso-lims-migration
+            tag: 1.42.0
+          - project: misolims
+            image: miso-lims-webapp
+            tag: latest
+          - project: misolims
+            image: miso-lims-webapp
+            tag: 1.42.0
+            
 
     steps:
       - name: Login to Docker Hub
