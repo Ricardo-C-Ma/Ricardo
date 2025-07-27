@@ -115,35 +115,35 @@ jobs:
 
           #Senaite
           - project: senaite-senaite
-            image: senaite
+            image: senaite/senaite
             tag: 2.x
           - project: senite-senaite
-            image: senaite
+            image: senaite/senaite
             tag: v2.6.0
           - project: senaite-senaite
-            image: senaite
+            image: senaite/senaite
             tag: edge
 
           #misolims
           - project: misolims
-            image: miso-lims-migration
+            image: misolims/miso-lims-migration
             tag: latest
           - project: misolims
-            image: miso-lims-migration
+            image: misolims/miso-lims-migration
             tag: 1.42.0
           - project: misolims
-            image: miso-lims-webapp
+            image: misolims/miso-lims-webapp
             tag: latest
           - project: misolims
-            image: miso-lims-webapp
+            image: misolims/miso-lims-webapp
             tag: 1.42.0
 
           #openvpn
           - project: openvpn
-            image: openvpn-openvpn-as
+            image: openvpn/openvpn-openvpn-as
             tag: latest
           - project: openvpn
-            image: openvpn-openvpn-as
+            image: oopenvpn/penvpn-openvpn-as
             tag: 2.14.3-5936bcd7-Ubuntu24
             
 
