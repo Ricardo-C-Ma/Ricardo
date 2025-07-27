@@ -35,12 +35,20 @@ jobs:
         ]
     
     steps:
-      - name: Login to Personal ACR
+    # 第一步：登录 Docker Hub（关键修复）
+      - name: Login to Docker Hub
+        run: |
+          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login \
+          -u ${{ secrets.DOCKERHUB_USERNAME }} \
+          --password-stdin docker.io
+      
+      # 第二步：登录阿里云 ACR
+      - name: Login to Alibaba Cloud ACR
         run: |
           docker login -u ${{ secrets.ACR_USERNAME }} \
           -p ${{ secrets.ACR_PASSWORD }} \
           ${{ env.ACR_REGISTRY }}
-      
+            
       - name: Pull Docker Image
         run: docker pull ${{ matrix.image }}:${{ matrix.tag }}
       
@@ -63,12 +71,20 @@ jobs:
         image: ["jbohnslav/deepethogram"]
         tag: ["headless", "gui", "full"]
     steps:
-      - name: Login to Personal ACR
+      # 第一步：登录 Docker Hub（关键修复）
+      - name: Login to Docker Hub
+        run: |
+          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login \
+          -u ${{ secrets.DOCKERHUB_USERNAME }} \
+          --password-stdin docker.io
+      
+      # 第二步：登录阿里云 ACR
+      - name: Login to Alibaba Cloud ACR
         run: |
           docker login -u ${{ secrets.ACR_USERNAME }} \
           -p ${{ secrets.ACR_PASSWORD }} \
           ${{ env.ACR_REGISTRY }}
-      
+            
       - name: Pull Docker Image
         run: docker pull ${{ matrix.image }}:${{ matrix.tag }}
       
@@ -90,12 +106,20 @@ jobs:
         image: ["projectmonai/monai"]
         tag: ["latest", "1.5.0", "1.5.0rc1"]
     steps:
-      - name: Login to Personal ACR
+      # 第一步：登录 Docker Hub（关键修复）
+      - name: Login to Docker Hub
+        run: |
+          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login \
+          -u ${{ secrets.DOCKERHUB_USERNAME }} \
+          --password-stdin docker.io
+      
+      # 第二步：登录阿里云 ACR
+      - name: Login to Alibaba Cloud ACR
         run: |
           docker login -u ${{ secrets.ACR_USERNAME }} \
           -p ${{ secrets.ACR_PASSWORD }} \
           ${{ env.ACR_REGISTRY }}
-      
+            
       - name: Pull Docker Image
         run: docker pull ${{ matrix.image }}:${{ matrix.tag }}
       
@@ -122,12 +146,20 @@ jobs:
           "x86_64-lab-4.0.7", "x86_64-hub-4.0.2"
         ]
     steps:
-      - name: Login to Personal ACR
+     # 第一步：登录 Docker Hub（关键修复）
+      - name: Login to Docker Hub
+        run: |
+          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login \
+          -u ${{ secrets.DOCKERHUB_USERNAME }} \
+          --password-stdin docker.io
+      
+      # 第二步：登录阿里云 ACR
+      - name: Login to Alibaba Cloud ACR
         run: |
           docker login -u ${{ secrets.ACR_USERNAME }} \
           -p ${{ secrets.ACR_PASSWORD }} \
           ${{ env.ACR_REGISTRY }}
-      
+            
       - name: Pull Docker Image
         run: docker pull ${{ matrix.image }}:${{ matrix.tag }}
       
@@ -147,12 +179,20 @@ jobs:
       matrix:
         project: ["jupyter-nbviewer"]
     steps:
-      - name: Login to Personal ACR
+   # 第一步：登录 Docker Hub（关键修复）
+      - name: Login to Docker Hub
+        run: |
+          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login \
+          -u ${{ secrets.DOCKERHUB_USERNAME }} \
+          --password-stdin docker.io
+      
+      # 第二步：登录阿里云 ACR
+      - name: Login to Alibaba Cloud ACR
         run: |
           docker login -u ${{ secrets.ACR_USERNAME }} \
           -p ${{ secrets.ACR_PASSWORD }} \
           ${{ env.ACR_REGISTRY }}
-      
+            
       - name: Pull Docker Image
         run: docker pull jupyter/nbviewer:801ca2b
       
