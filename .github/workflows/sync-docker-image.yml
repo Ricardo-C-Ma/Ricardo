@@ -2,7 +2,7 @@ name: Sync Docker Images to Personal ACR
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # UTC 时间每天凌晨2点 (北京时间上午10点)
+    - cron: '0 2 * * *'  # 每天UTC凌晨2点 (北京时间上午10点)
   workflow_dispatch:
 
 env:
@@ -10,28 +10,126 @@ env:
   ACR_NAMESPACE: ricardolerry
 
 jobs:
-  sync-deeplabcut:
+  sync:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          # DeepLabCut tags
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: latest-jupyter
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: latest-core
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: latest-jupyter-cuda12.4-cudnn9
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: 3.0.0-jupyter-cuda12.4-cudnn9
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: latest-core-cuda12.4-cudnn9
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: 3.0.0-core-cuda12.4-cudnn9
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: latest-base-cuda12.4-cudnn9
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: 3.0.0-base-cuda12.4-cudnn9
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: latest-jupyter-cuda12.1-cudnn9
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: 3.0.0-jupyter-cuda12.1-cudnn9
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: latest-core-cuda12.1-cudnn9
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: 3.0.0-core-cuda12.1-cudnn9
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: latest-base-cuda12.1-cudnn9
+          - project: deeplabcut
+            image: deeplabcut/deeplabcut
+            tag: 3.0.0-base-cuda12.1-cudnn9
+
+          # DeepEthogram
+          - project: deepethogram
+            image: jbohnslav/deepethogram
+            tag: headless
+          - project: deepethogram
+            image: jbohnslav/deepethogram
+            tag: gui
+          - project: deepethogram
+            image: jbohnslav/deepethogram
+            tag: full
+
+          # MONAI
+          - project: monai
+            image: projectmonai/monai
+            tag: latest
+          - project: monai
+            image: projectmonai/monai
+            tag: 1.5.0
+          - project: monai
+            image: projectmonai/monai
+            tag: 1.5.0rc1
+
+          # Jupyter DataScience
+          - project: jupyter-datascience
+            image: jupyter/datascience-notebook
+            tag: 801ca2b
+          - project: jupyter-datascience
+            image: jupyter/datascience-notebook
+            tag: x86_64-ubuntu-22.04
+          - project: jupyter-datascience
+            image: jupyter/datascience-notebook
+            tag: x86_64-r-4.3.1
+          - project: jupyter-datascience
+            image: jupyter/datascience-notebook
+            tag: x86_64-python-3.11.6
+          - project: jupyter-datascience
+            image: jupyter/datascience-notebook
+            tag: x86_64-notebook-7.0.6
+          - project: jupyter-datascience
+            image: jupyter/datascience-notebook
+            tag: x86_64-latest
+          - project: jupyter-datascience
+            image: jupyter/datascience-notebook
+            tag: x86_64-lab-4.0.7
+          - project: jupyter-datascience
+            image: jupyter/datascience-notebook
+            tag: x86_64-hub-4.0.2
+
+          # Jupyter NBViewer
+          - project: jupyter-nbviewer
+            image: jupyter/nbviewer
+            tag: 801ca2b
+
     steps:
-      # 登录 Docker Hub (修复版 - 单行命令)
       - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin docker.io
-      
-      # 登录阿里云 ACR (修复版 - 单行命令)
-      - name: Login to Alibaba Cloud ACR
-        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login ${{ env.ACR_REGISTRY }} --username ${{ secrets.ACR_USERNAME }} --password-stdin
-      
-      # 其他步骤保持不变...
-      - name: Pull Docker Image
-        run: docker pull deeplabcut/deeplabcut:latest-core
-      
-      - name: Tag Image
-        run: docker tag deeplabcut/deeplabcut:latest-core ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/deeplabcut:latest-core
-      
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin docker.io
+
+      - name: Login to Aliyun ACR
+        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login -u "${{ secrets.ACR_USERNAME }}" --password-stdin ${{ env.ACR_REGISTRY }}
+
+      - name: Pull Docker image
+        run: docker pull ${{ matrix.image }}:${{ matrix.tag }}
+
+      - name: Retag image for ACR
+        run: docker tag ${{ matrix.image }}:${{ matrix.tag }} ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
+
       - name: Push to ACR
-        run: docker push ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/deeplabcut:latest-core
-      
+        run: docker push ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }}
+
       - name: Cleanup
         run: |
-          docker rmi deeplabcut/deeplabcut:latest-core || true
-          docker system prune -f
+          docker rmi ${{ matrix.image }}:${{ matrix.tag }} || true
+          docker rmi ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ matrix.project }}:${{ matrix.tag }} || true
+          docker system prune -f || true
