@@ -117,7 +117,7 @@ jobs:
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin docker.io
 
       - name: Login to Aliyun ACR
-        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login -u "${{ secrets.ACR_USERNAME }}" --password-stdin ${{ env.ACR_REGISTRY }}
+        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login -u "${{ secrets.ACR_USERNAME }}" --password-stdin ${{ secrets.ACR_REGISTRY }}
 
       - name: Pull Docker image
         run: docker pull ${{ matrix.image }}:${{ matrix.tag }}
