@@ -140,10 +140,10 @@ jobs:
 
           #openvpn
           - project: openvpn
-            image: openvpn/openvpn-openvpn-as
+            image: openvpn/openvpn-as
             tag: latest
           - project: openvpn
-            image: oopenvpn/penvpn-openvpn-as
+            image: oopenvpn/openvpn-as
             tag: 2.14.3-5936bcd7-Ubuntu24
             
 
