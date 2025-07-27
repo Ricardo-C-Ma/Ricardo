@@ -1,0 +1,218 @@
+# ======================================================================
+# 工作流名称：同步 Docker 镜像到阿里云个人版 ACR
+# 配置说明：每个项目独立仓库，共享同一个 ACR 命名空间
+# ======================================================================
+name: Sync Docker Images to Personal ACR
+
+# ======================================================================
+# 触发条件配置
+# ======================================================================
+on:
+  # 定时触发 - UTC 时间每天凌晨 2 点运行 (北京时间上午 10 点)
+  schedule:
+    - cron: '0 2 * * *'
+  
+  # 手动触发 - 允许在 GitHub Actions 页面手动运行
+  workflow_dispatch:
+
+# ======================================================================
+# 环境变量配置（关键修改部分）
+# ======================================================================
+env:
+  # 个人版 ACR 注册表地址（共享地址）
+  ACR_REGISTRY: crpi-mvnxnutpj57cigam.cn-hangzhou.personal.cr.aliyuncs.com
+  
+  # 命名空间（共享命名空间）
+  ACR_NAMESPACE: ricardolerry
+  
+  # 仓库名称（改为使用项目名称变量）
+  # 注意：现在每个项目有自己的仓库名称
+  REPO_NAME: ${{ matrix.project }}
+
+# ======================================================================
+# 任务定义：每个项目使用独立仓库
+# ======================================================================
+jobs:
+  # 任务 1: 同步 DeepLabCut 相关镜像
+  sync-deeplabcut:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # 项目名称（对应仓库名）
+        project: ["deeplabcut"]
+        
+        # 源镜像名称
+        image: ["deeplabcut/deeplabcut"]
+        
+        # 要同步的标签列表
+        tag:
+          - "latest-jupyter"
+          - "latest-core"
+          - "latest-jupyter-cuda12.4-cudnn9"
+          - "3.0.0-jupyter-cuda12.4-cudnn9"
+          - "latest-core-cuda12.4-cudnn9"
+          - "3.0.0-core-cuda12.4-cudnn9"
+          - "latest-base-cuda12.4-cudnn9"
+          - "3.0.0-base-cuda12.4-cudnn9"
+          - "latest-jupyter-cuda12.1-cudnn9"
+          - "3.0.0-jupyter-cuda12.1-cudnn9"
+          - "latest-core-cuda12.1-cudnn9"
+          - "3.0.0-core-cuda12.1-cudnn9"
+          - "latest-base-cuda12.1-cudnn9"
+          - "3.0.0-base-cuda12.1-cudnn9"]
+    
+    steps:
+      # 步骤 1: 登录个人版 ACR
+      - name: Login to Personal ACR
+        run: |
+          docker login -u ${{ secrets.ACR_USERNAME }} \
+          -p ${{ secrets.ACR_PASSWORD }} \
+          ${{ env.ACR_REGISTRY }}
+      
+      # 步骤 2: 从 Docker Hub 拉取镜像
+      - name: Pull Docker Image
+        run: |
+          docker pull ${{ matrix.image }}:${{ matrix.tag }}
+      
+      # 步骤 3: 为镜像打上个人版 ACR 标签
+      - name: Tag Image for Personal ACR
+        run: |
+          docker tag ${{ matrix.image }}:${{ matrix.tag }} \
+          ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.REPO_NAME }}:${{ matrix.tag }}
+      
+      # 步骤 4: 推送镜像到个人版 ACR
+      - name: Push to Personal ACR
+        run: |
+          docker push ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.REPO_NAME }}:${{ matrix.tag }}
+
+  # 任务 2: 同步 DeepEthogram 相关镜像
+  sync-deepethogram:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: ["deepethogram"]
+        image: ["jbohnslav/deepethogram"]
+        tag:
+          - "headless"
+          - "gui"
+          - "full"
+    steps:
+      - name: Login to Personal ACR
+        run: |
+          docker login -u ${{ secrets.ACR_USERNAME }} \
+          -p ${{ secrets.ACR_PASSWORD }} \
+          ${{ env.ACR_REGISTRY }}
+      
+      - name: Pull Docker Image
+        run: |
+          docker pull ${{ matrix.image }}:${{ matrix.tag }}
+      
+      - name: Tag Image for Personal ACR
+        run: |
+          docker tag ${{ matrix.image }}:${{ matrix.tag }} \
+          ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.REPO_NAME }}:${{ matrix.tag }}
+      
+      - name: Push to Personal ACR
+        run: |
+          docker push ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.REPO_NAME }}:${{ matrix.tag }}
+
+  # 任务 3: 同步 MONAI 相关镜像
+  sync-monai:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: ["monai"]
+        image: ["projectmonai/monai"]
+        tag:
+          - "latest"
+          - "1.5.0"
+          - "1.5.0rc1"
+    steps:
+      - name: Login to Personal ACR
+        run: |
+          docker login -u ${{ secrets.ACR_USERNAME }} \
+          -p ${{ secrets.ACR_PASSWORD }} \
+          ${{ env.ACR_REGISTRY }}
+      
+      - name: Pull Docker Image
+        run: |
+          docker pull ${{ matrix.image }}:${{ matrix.tag }}
+      
+      - name: Tag Image for Personal ACR
+        run: |
+          docker tag ${{ matrix.image }}:${{ matrix.tag }} \
+          ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.REPO_NAME }}:${{ matrix.tag }}
+      
+      - name: Push to Personal ACR
+        run: |
+          docker push ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.REPO_NAME }}:${{ matrix.tag }}
+
+  # 任务 4: 同步 Jupyter DataScience Notebook 镜像
+  sync-jupyter-datascience:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: ["jupyter-datascience"]
+        image: ["jupyter/datascience-notebook"]
+        tag:
+          - "801ca2b"
+          - "x86_64-ubuntu-22.04"
+          - "x86_64-r-4.3.1"
+          - "x86_64-python-3.11.6"
+          - "x86_64-notebook-7.0.6"
+          - "x86_64-latest"
+          - "x86_64-lab-4.0.7"
+          - "x86_64-hub-4.0.2"
+    steps:
+      - name: Login to Personal ACR
+        run: |
+          docker login -u ${{ secrets.ACR_USERNAME }} \
+          -p ${{ secrets.ACR_PASSWORD }} \
+          ${{ env.ACR_REGISTRY }}
+      
+      - name: Pull Docker Image
+        run: |
+          docker pull ${{ matrix.image }}:${{ matrix.tag }}
+      
+      - name: Tag Image for Personal ACR
+        run: |
+          docker tag ${{ matrix.image }}:${{ matrix.tag }} \
+          ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.REPO_NAME }}:${{ matrix.tag }}
+      
+      - name: Push to Personal ACR
+        run: |
+          docker push ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.REPO_NAME }}:${{ matrix.tag }}
+
+  # 任务 5: 同步 Jupyter NBViewer 镜像
+  sync-jupyter-nbviewer:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: ["jupyter-nbviewer"]
+    steps:
+      - name: Login to Personal ACR
+        run: |
+          docker login -u ${{ secrets.ACR_USERNAME }} \
+          -p ${{ secrets.ACR_PASSWORD }} \
+          ${{ env.ACR_REGISTRY }}
+      
+      - name: Pull Docker Image
+        run: |
+          docker pull jupyter/nbviewer:801ca2b
+      
+      - name: Tag Image for Personal ACR
+        run: |
+          docker tag jupyter/nbviewer:801ca2b \
+          ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.REPO_NAME }}:801ca2b
+      
+      - name: Push to Personal ACR
+        run: |
+          docker push ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.REPO_NAME }}:801ca2b
+
+# ======================================================================
+# 项目结构说明
+# 每个项目使用独立的仓库，但共享同一个 ACR 命名空间
+# 镜像存储位置示例：
+#   deeplabcut 项目 → crpi-mvnxnutpj57cigam.cn-hangzhou.personal.cr.aliyuncs.com/ricardolerry/deeplabcut
+#   monai 项目      → crpi-mvnxnutpj57cigam.cn-hangzhou.personal.cr.aliyuncs.com/ricardolerry/monai
+# ======================================================================
