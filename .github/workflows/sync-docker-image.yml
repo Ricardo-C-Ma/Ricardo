@@ -148,13 +148,13 @@ jobs:
 
           #elabftw
           - project: elabing
-            image: elabftw/elabing
+            image: elabftw/elabimg
             tag: ird-5.3.11
           - project: elabing
-            image: elabftw/elabing
+            image: elabftw/elabimg
             tag: latest
           - project: elabing
-            image: elabftw/elabing
+            image: elabftw/elabimg
             tag: stable
             
 
