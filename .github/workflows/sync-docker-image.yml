@@ -80,10 +80,10 @@ jobs:
             tag: latest
           - project: monai
             image: projectmonai/monai
-            tag: 1.5.0
+            tag: 1.5.1
           - project: monai
             image: projectmonai/monai
-            tag: 1.5.0rc1
+            tag: 1.5.1rc1
 
           # Jupyter DataScience
           - project: jupyter-datascience
@@ -147,16 +147,13 @@ jobs:
             tag: 2.14.3-5936bcd7-Ubuntu24
 
           #elabftw
-          - project: elabftw
-            image: elabftw/elabing
-            tag: master
-          - project: elabftw
+          - project: elabing
             image: elabftw/elabing
             tag: ird-5.3.11
-          - project: elabftw
+          - project: elabing
             image: elabftw/elabing
             tag: latest
-          - project: elabftw
+          - project: elabing
             image: elabftw/elabing
             tag: stable
             
